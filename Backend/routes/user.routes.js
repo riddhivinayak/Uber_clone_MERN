@@ -13,9 +13,10 @@ router.post('/register', [
     body('fullName.lastname').isLength({ min: 2 }).withMessage('Last name must be at least 2 characters long')
     ], userContoller.registerUser)
 
-
-
-
+  router.post('/login', [
+    body('email').isEmail().withMessage('Please enter a valid email address'),
+    body('password').not().isEmpty().withMessage('Password is required')
+  ], userContoller.loginUser)
 
 
 
