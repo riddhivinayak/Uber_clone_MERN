@@ -19,9 +19,9 @@ router.post('/register', [
     body('password').not().isEmpty().withMessage('Password is required')
   ], userContoller.loginUser)
 
-  router.get('/profile', authMiddleware.authenticateToken, userContoller.getUserProfile)
+  router.get('/profile', authMiddleware.authenticateUserToken, userContoller.getUserProfile)
 
-  router.get('/logout', authMiddleware.authenticateToken, userContoller.logoutUser)
+  router.get('/logout', authMiddleware.authenticateUserToken, userContoller.logoutUser)
 
 
 
