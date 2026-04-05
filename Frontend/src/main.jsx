@@ -8,9 +8,11 @@ import CaptainContext from './context/CaptainContext.jsx'
 createRoot(document.getElementById('root')).render(
     <CaptainContext>
     <UserContext>
+        <SocketProvider>
         <BrowserRouter>
             <App />
         </BrowserRouter>
+        </SocketProvider>
     </UserContext>
     </CaptainContext>
 )
