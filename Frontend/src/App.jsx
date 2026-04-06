@@ -11,6 +11,8 @@ import UserLogout from './Pages/UserLogout'
 import CaptainHome from './Pages/CaptainHome'
 import CaptainProtectWrapper from './Pages/CaptainProtectedWrapper'
 import CaptainLogout from './Pages/CaptainLogout'
+import Riding from './Pages/Riding'
+
 const App = () => {
   return (
     <div>

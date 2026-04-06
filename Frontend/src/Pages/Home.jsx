@@ -10,7 +10,7 @@ import LookingForDriver from '../components/LookingForDriver';
 import WaitingForDriver from '../components/WaitingForDriver';
 import { SocketContext } from '../context/SocketContext';
 import { useContext } from 'react';
-import { UserDataContext } from '../context/UserContext';
+import { UserdataContext } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import LiveTracking from '../components/LiveTracking';
 
@@ -38,7 +38,7 @@ const Home = () => {
     const navigate = useNavigate()
 
     const { socket } = useContext(SocketContext)
-    const { user } = useContext(UserDataContext)
+    const { user } = useContext(UserdataContext)
 
     useEffect(() => {
         socket.emit("join", { userType: "user", userId: user._id })
