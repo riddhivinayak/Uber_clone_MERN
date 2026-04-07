@@ -33,7 +33,7 @@ const {user , setUser} = React.useContext(UserdataContext)
       setUser(data.user)
       localStorage.setItem('token', data.token)
 
-     navigate('/home')
+     navigate('users/home')
     }
     
       setFirstName('')

@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+/* Fix Leaflet z-index layering */
+.leaflet-container {
+    z-index: 1 !important;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+    z-index: 2 !important;
+}
+
+/* Ensure panels stay on top */
+.leaflet-popup {
+    z-index: 5 !important;
+}

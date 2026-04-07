@@ -1,4 +1,6 @@
 const rideModel = require('../models/ride.model');
+require('../models/user.models');
+require('../models/captain.model');
 const mapService = require('./maps.service');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
@@ -65,7 +67,7 @@ module.exports.createRide = async ({
 
 
 
-    const ride = rideModel.create({
+    const ride = await rideModel.create({
         user,
         pickup,
         destination,
@@ -92,7 +94,7 @@ module.exports.confirmRide = async ({
 
     const ride = await rideModel.findOne({
         _id: rideId
-    }).populate('user').populate('captain').select('+otp');
+    }).populate({ path: 'user', model: 'User' }).populate({ path: 'captain', model: 'Captain' }).select('+otp');
 
     if (!ride) {
         throw new Error('Ride not found');
@@ -109,7 +111,7 @@ module.exports.startRide = async ({ rideId, otp, captain }) => {
 
     const ride = await rideModel.findOne({
         _id: rideId
-    }).populate('user').populate('captain').select('+otp');
+    }).populate({ path: 'user', model: 'User' }).populate({ path: 'captain', model: 'Captain' }).select('+otp');
 
     if (!ride) {
         throw new Error('Ride not found');
@@ -140,7 +142,7 @@ module.exports.endRide = async ({ rideId, captain }) => {
     const ride = await rideModel.findOne({
         _id: rideId,
         captain: captain._id
-    }).populate('user').populate('captain').select('+otp');
+    }).populate({ path: 'user', model: 'User' }).populate({ path: 'captain', model: 'Captain' }).select('+otp');
 
     if (!ride) {
         throw new Error('Ride not found');

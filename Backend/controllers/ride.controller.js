@@ -3,6 +3,8 @@ const { validationResult } = require('express-validator');
 const mapService = require('../services/maps.service');
 const { sendMessageToSocketId } = require('../socket');
 const rideModel = require('../models/ride.model');
+require('../models/user.models');
+require('../models/captain.model');
 
 
 module.exports.createRide = async (req, res) => {
@@ -14,27 +16,31 @@ module.exports.createRide = async (req, res) => {
     const { userId, pickup, destination, vehicleType } = req.body;
 
     try {
+        if (!req.user) {
+            return res.status(401).json({ message: 'Unauthorized. User data is missing.' });
+        }
+
         const ride = await rideService.createRide({ user: req.user._id, pickup, destination, vehicleType });
         res.status(201).json(ride);
 
-        const pickupCoordinates = await mapService.getAddressCoordinate(pickup);
+        process.nextTick(async () => {
+            try {
+                const pickupCoordinates = await mapService.getAddressCoordinate(pickup);
+                const captainsInRadius = await mapService.getCaptainsInTheRadius(pickupCoordinates.ltd, pickupCoordinates.lng, 2);
+                const rideWithUser = await rideModel.findOne({ _id: ride._id }).populate({ path: 'user', model: 'User' });
 
-
-
-        const captainsInRadius = await mapService.getCaptainsInTheRadius(pickupCoordinates.ltd, pickupCoordinates.lng, 2);
-
-        ride.otp = ""
-
-        const rideWithUser = await rideModel.findOne({ _id: ride._id }).populate('user');
-
-        captainsInRadius.map(captain => {
-
-            sendMessageToSocketId(captain.socketId, {
-                event: 'new-ride',
-                data: rideWithUser
-            })
-
-        })
+                captainsInRadius.forEach(captain => {
+                    if (captain.socketId) {
+                        sendMessageToSocketId(captain.socketId, {
+                            event: 'new-ride',
+                            data: rideWithUser
+                        })
+                    }
+                })
+            } catch (backgroundError) {
+                console.error('Failed to notify captains for new ride:', backgroundError?.message || backgroundError);
+            }
+        });
 
     } catch (err) {
 

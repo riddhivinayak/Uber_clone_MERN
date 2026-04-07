@@ -7,31 +7,48 @@ const ConfirmRidePopUp = (props) => {
     const [ otp, setOtp ] = useState('')
     const navigate = useNavigate()
 
+    if (!props.ride) {
+        return (
+            <div className='p-6 text-center'>
+                <p className='text-lg font-semibold'>Ride data is missing.</p>
+                <button type='button' onClick={() => props.setConfirmRidePopupPanel(false)} className='mt-4 w-full bg-gray-500 text-white p-3 rounded-lg'>Close</button>
+            </div>
+        )
+    }
+
     const submitHander = async (e) => {
         e.preventDefault()
 
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/start-ride`, {
-            params: {
-                rideId: props.ride._id,
-                otp: otp
-            },
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-        })
-
-        if (response.status === 200) {
-            props.setConfirmRidePopupPanel(false)
-            props.setRidePopupPanel(false)
-            navigate('/captains/riding', { state: { ride: props.ride } })
+        if (!props.ride?._id) {
+            console.error('No ride data available for confirmation')
+            return
         }
 
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/start-ride`, {
+                params: {
+                    rideId: props.ride._id,
+                    otp: otp
+                },
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+
+            if (response.status === 200) {
+                props.setConfirmRidePopupPanel(false)
+                props.setRidePopupPanel(false)
+                navigate('/captains/riding', { state: { ride: props.ride } })
+            }
+        } catch (error) {
+            console.error('Ride start failed:', error?.response?.data || error.message || error)
+        }
 
     }
     return (
-        <div>
+        <div className='relative'>
             <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
-                props.setRidePopupPanel(false)
+                props.setConfirmRidePopupPanel(false)
             }}><i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i></h5>
             <h3 className='text-2xl font-semibold mb-5'>Confirm this ride to Start</h3>
             <div className='flex items-center justify-between p-3 border-2 border-yellow-400 rounded-lg mt-4'>
@@ -70,11 +87,10 @@ const ConfirmRidePopUp = (props) => {
                     <form onSubmit={submitHander}>
                         <input value={otp} onChange={(e) => setOtp(e.target.value)} type="text" className='bg-[#eee] px-6 py-4 font-mono text-lg rounded-lg w-full mt-3' placeholder='Enter OTP' />
 
-                        <button className='w-full mt-5 text-lg flex justify-center bg-green-600 text-white font-semibold p-3 rounded-lg'>Confirm</button>
-                        <button onClick={() => {
+                        <button type='submit' className='w-full mt-5 text-lg flex justify-center bg-green-600 text-white font-semibold p-3 rounded-lg'>Confirm</button>
+                        <button type='button' onClick={() => {
                             props.setConfirmRidePopupPanel(false)
                             props.setRidePopupPanel(false)
-
                         }} className='w-full mt-2 bg-red-600 text-lg text-white font-semibold p-3 rounded-lg'>Cancel</button>
 
                     </form>

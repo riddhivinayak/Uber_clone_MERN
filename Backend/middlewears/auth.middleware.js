@@ -26,6 +26,9 @@ try{
 
     const user = await userModel.findById(decoded._id);// we only recive that data when decoded that was used at the time of tpoken genration like _id in this case
 
+    if (!user) {
+        return res.status(401).json({ message: 'Unauthorized. User not found.' });
+    }
 
     req.user = user;
 
@@ -55,6 +58,10 @@ try{
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
        
     const captain = await captainModel.findById(decoded._id);// we only recive that data when decoded that was used at the time of tpoken genration like _id in this case
+
+    if (!captain) {
+        return res.status(401).json({ message: 'Unauthorized. Captain not found.' });
+    }
 
     req.captain = captain;
 
