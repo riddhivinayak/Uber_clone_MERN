@@ -60,7 +60,7 @@ vehicleType:{
 }
 },
 location:{
-    ltd:{type: Number},
+    lat:{type: Number},
     lng:{type: Number}
 }
 })

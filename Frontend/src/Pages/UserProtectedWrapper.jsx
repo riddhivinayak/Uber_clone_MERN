@@ -5,7 +5,7 @@ import axios from 'axios'
 
 const UserProtectedWrapper = ({ children }) => {
 
-  const { user, setUser } = useContext(UserdataContext)
+  const { setUser } = useContext(UserdataContext)
   const navigate = useNavigate()
   const token = localStorage.getItem('token')
 
@@ -13,42 +13,40 @@ const UserProtectedWrapper = ({ children }) => {
 
   useEffect(() => {
 
-    // 🚨 Step 1: No token → redirect immediately
+    // 🚨 If no token → redirect and STOP execution
     if (!token) {
       navigate('/users/login')
       return
     }
 
-    // 🚨 Step 2: Verify token belongs to USER
+    // 📡 Verify user token
     axios.get(`${import.meta.env.VITE_BASE_URL}/users/profile`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-      .then(response => {
-        if (response.status === 200) {
-          setUser(response.data.user)
-          setIsLoading(false)
-        }
-      })
-      .catch(err => {
-        // ❌ Token invalid OR not a user (maybe captain token)
-        localStorage.removeItem('token')
-        navigate('/users/login')
-      })
+    .then(response => {
+      if (response.status === 200) {
+        setUser(response.data.user)
+      }
+      setIsLoading(false)
+    })
+    .catch(err => {
+      console.error('User auth failed:', err?.response?.data || err.message)
 
-  }, [token, navigate, setUser])
+      localStorage.removeItem('token')
+      navigate('/users/login')
+      setIsLoading(false)
+    })
 
-  // ⏳ Prevent UI flicker until auth is confirmed
+  }, []) // ✅ run only once
+
+  // ⏳ Prevent flicker
   if (isLoading) {
     return <div>Loading...</div>
   }
 
-  return (
-    <>
-      {children}
-    </>
-  )
+  return children
 }
 
 export default UserProtectedWrapper

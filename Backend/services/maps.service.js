@@ -38,7 +38,7 @@ module.exports.getAddressCoordinate = async (address) => {
 
         if (location) {
             return {
-                ltd: parseFloat(location.lat),
+                lat: parseFloat(location.lat),
                 lng: parseFloat(location.lon)
             };
         }
@@ -62,9 +62,9 @@ module.exports.getDistanceTime = async (origin, destination) => {
 
         // Simple calculation of distance using Haversine formula
         const distance = calculateDistance(
-            originCoords.ltd,
+            originCoords.lat,
             originCoords.lng,
-            destinationCoords.ltd,
+            destinationCoords.lat,
             destinationCoords.lng
         );
 
@@ -137,16 +137,16 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return distance;
 }
 
-module.exports.getCaptainsInTheRadius = async (ltd, lng, radius) => {
+module.exports.getCaptainsInTheRadius = async (lat, lng, radius) => {
     const captainModel = require('../models/captain.model');
-
+    console.log(`Searching for captains in radius: lat: ${lat}, lng: ${lng}, radius: ${radius}km`);
     const captains = await captainModel.find({
         location: {
             $geoWithin: {
-                $centerSphere: [[lng, ltd], radius / 6371]
+                $centerSphere: [[lng, lat], radius / 6371]
             }
         }
     });
-
+    console.log(`Query returned ${captains.length} captains`);
     return captains;
 }
