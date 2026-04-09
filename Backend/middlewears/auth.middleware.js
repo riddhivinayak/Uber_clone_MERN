@@ -14,9 +14,9 @@ if (!token) {
     return res.status(401).json({ message: 'Unauthorized. No token provided.' });
 }
 
-const isblacklistesdToken = await blacklistTokenModel.findOne({ token });
+const isBlacklistedToken = await blacklistTokenModel.findOne({ token });
 
-if (isblacklistesdToken) {
+if (isBlacklistedToken) {
     return res.status(401).json({ message: 'Unauthorized. Token has been blacklisted.' });
 }
 
@@ -47,9 +47,9 @@ if (!token) {
     return res.status(401).json({ message: 'Unauthorized. No token provided.' });
 }
 
-const isblacklistesdToken = await blacklistTokenModel.findOne({ token });
+const isBlacklistedToken = await blacklistTokenModel.findOne({ token });
 
-if (isblacklistesdToken) {
+if (isBlacklistedToken) {
     return res.status(401).json({ message: 'Unauthorized. Token has been blacklisted.' });
 }
 
